@@ -13,6 +13,9 @@
             <li>
               <router-link to="/practice" class="btn btn-ghost">Practice</router-link>
             </li>
+            <li>
+              <button class="btn btn-ghost text-error" @click="resetDatabase">Reset DB</button>
+            </li>
           </ul>
         </div>
       </div>
@@ -24,4 +27,13 @@
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
+import { FlashcardDatabase } from './services/database';
+
+const db = new FlashcardDatabase();
+
+async function resetDatabase() {
+  if (!confirm('Are you sure you want to reset the database? This will delete all flashcards.')) return;
+  await db.resetDatabase();
+  window.location.reload();
+}
 </script>

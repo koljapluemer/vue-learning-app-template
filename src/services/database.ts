@@ -9,8 +9,8 @@ export class FlashcardDatabase extends Dexie {
 
   constructor() {
     super('flashcardDB');
-    this.version(1).stores({
-      flashcards: '++id, front, back, card, lastReviewDate'
+    this.version(2).stores({
+      flashcards: '++id, front, back, card.due, card.stability, card.difficulty, card.elapsed_days, card.scheduled_days, card.reps, card.lapses, card.state, lastReviewDate'
     });
     const params = generatorParameters({ enable_fuzz: true });
     this.fsrs = new FSRS(params);
@@ -52,5 +52,10 @@ export class FlashcardDatabase extends Dexie {
 
   async updateFlashcard(id: number, front: string, back: string): Promise<void> {
     await this.flashcards.update(id, { front, back });
+  }
+
+  async resetDatabase(): Promise<void> {
+    await this.delete();
+    await this.open();
   }
 } 

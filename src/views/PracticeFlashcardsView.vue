@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useFlashcards } from '../composables/useFlashcards';
+import PracticeCard from '../components/PracticeCard.vue';
 import { FlashcardDatabase } from '../services/database';
 import type { Flashcard } from '../types';
 import { Rating, type Grade } from 'ts-fsrs';
 
 const db = new FlashcardDatabase();
+const {
+  getDueFlashcards,
+  reviewFlashcard
+} = useFlashcards();
+
 const currentCard = ref<Flashcard | null>(null);
 const isRevealed = ref(false);
 const dueCount = ref(0);
@@ -14,7 +21,7 @@ onMounted(async () => {
 });
 
 async function loadNextCard() {
-  const dueCards = await db.getDueFlashcards();
+  const dueCards = await getDueFlashcards();
   dueCount.value = dueCards.length;
   
   if (dueCards.length === 0) {
@@ -35,7 +42,7 @@ async function revealCard() {
 async function scoreCard(grade: Grade) {
   if (!currentCard.value) return;
   
-  await db.reviewFlashcard(currentCard.value.id!, grade);
+  await reviewFlashcard(currentCard.value.id!, grade);
   await loadNextCard();
 }
 </script>
@@ -44,42 +51,13 @@ async function scoreCard(grade: Grade) {
   <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Practice Flashcards</h1>
     
-    <div v-if="currentCard" class="card bg-base-100 shadow-xl max-w-2xl mx-auto">
-      <div class="card-body">
-        <div class="prose max-w-none">
-          <p class="text-lg">{{ currentCard.front }}</p>
-          
-          <div v-if="isRevealed" class="mt-4">
-            <p class="text-lg">{{ currentCard.back }}</p>
-          </div>
-        </div>
-        
-        <div class="card-actions justify-center mt-4">
-          <button
-            v-if="!isRevealed"
-            class="btn btn-primary"
-            @click="revealCard"
-          >
-            Reveal Answer
-          </button>
-          
-          <div v-else class="flex flex-row gap-2">
-            <button class="btn btn-error" @click="scoreCard(Rating.Again)">
-              Wrong
-            </button>
-            <button class="btn btn-warning" @click="scoreCard(Rating.Hard)">
-              Hard
-            </button>
-            <button class="btn btn-success" @click="scoreCard(Rating.Good)">
-              Correct
-            </button>
-            <button class="btn btn-info" @click="scoreCard(Rating.Easy)">
-              Easy
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PracticeCard
+      v-if="currentCard"
+      :card="currentCard"
+      :is-revealed="isRevealed"
+      @reveal="revealCard"
+      @score="scoreCard"
+    />
     
     <div v-else class="text-center">
       <p class="text-xl mb-4">

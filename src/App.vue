@@ -1,18 +1,27 @@
 <template>
-  <div class="min-h-screen bg-base-200 p-8">
-    <div class="card w-96 bg-base-100 shadow-xl">
-      <figure><img src="https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure>
-      <div class="card-body">
-        <h2 class="card-title">Daisy UI Card Demo</h2>
-        <p>This is a sample card component from Daisy UI, styled with Tailwind CSS.</p>
-        <div class="card-actions justify-end">
-          <button class="btn btn-primary">Action</button>
+  <div class="min-h-screen bg-base-200">
+    <div class="navbar bg-base-100 shadow-lg">
+      <div class="container mx-auto">
+        <div class="flex-1">
+          <router-link to="/" class="btn btn-ghost text-xl">Flashcard App</router-link>
+        </div>
+        <div class="flex-none">
+          <ul class="menu menu-horizontal px-1">
+            <li>
+              <router-link to="/manage" class="btn btn-ghost">Manage Cards</router-link>
+            </li>
+            <li>
+              <router-link to="/practice" class="btn btn-ghost">Practice</router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
+
+    <RouterView />
   </div>
 </template>
 
 <script setup lang="ts">
-// Component logic here
+import { RouterView } from 'vue-router';
 </script>
